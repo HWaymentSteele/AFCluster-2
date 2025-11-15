@@ -81,14 +81,17 @@ def main(args):
                 print(fil_name)
                 if os.path.exists(f'{pred_dir}/{fil_name}/s{i}/{fil_name}_0.done.txt'):
                     continue
-                subprocess.run(['colabfold_batch', 
-                                    #'--amber', 
+
+                sp_command = ['colabfold_batch', 
                                     '--use-dropout', 
                                     '--num-recycle', '3', 
-                                    #'--use-gpu-relax', 
                                     '--random-seed', f'{i}', 
                                     '--jobname-prefix', f'{fil_name}',
-                                    f'{fil}', f'{pred_dir}/{fil_name}/s{i}'])
+                                    f'{fil}', f'{pred_dir}/{fil_name}/s{i}']
+                if args.amber_relax:
+                    sp.command.extend(['--amber', '--use-gpu-relax'])                   
+
+                subprocess.run(sp_command)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
@@ -107,6 +110,8 @@ if __name__ == "__main__":
     os.makedirs(args.outdir, exist_ok=True)
     os.makedirs(args.tmpdir, exist_ok=True)
 
+    import shutil
+    shutil.which('mmseqs')
     np.random.default_rng(seed=args.random_seed)
     
     os.environ['PATH'] = args.path_vars['PATH']
