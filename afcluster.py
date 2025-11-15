@@ -110,8 +110,6 @@ if __name__ == "__main__":
     os.makedirs(args.outdir, exist_ok=True)
     os.makedirs(args.tmpdir, exist_ok=True)
 
-    import shutil
-    shutil.which('mmseqs')
     np.random.default_rng(seed=args.random_seed)
     
     os.environ['PATH'] = args.path_vars['PATH']
