@@ -1,0 +1,28 @@
+Universe   = container
+container_image = docker://ghcr.io/sokrypton/colabfold:1.5.5-cuda12.2.2
+Executable = run_afcluster_chtc.sh
+Arguments = $(NAME)
+Output = logs/$(NAME).out
+Error = logs/$(NAME).err
+Log = logs/$(NAME).log
+
+transfer_input_files = run_afcluster.sh, $(NAME).fasta, /home/waymentsteel/AFCluster-2 
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+
+# CHTC requirements for GPU
+
++WantGPULab = true
+request_cpus = 1 
+request_memory = 20GB
+request_disk = 20GB
+request_gpus = 1 
+gpus_minimum_memory = 10000
++GPUJobLength = "short" 
+
+batch_name = helloworld
+output = colabfold_$(batch_name).out
+error = colabfold_$(batch_name).err
+log = colabfold_$(batch_name).log
+
+Queue NAME from input_seqs.txt

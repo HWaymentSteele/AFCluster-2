@@ -1,0 +1,13 @@
+Universe   = container
+container_image = docker://ghcr.io/sokrypton/colabfold:1.5.5-cuda12.2.2
+Executable = download_af2_weights.sh
+transfer_input_files = download_af2_weights.sh
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+RequestCpus = 4
+RequestMemory = 8GB
+RequestDisk = 10GB
+Log        = job.log
+Output     = job.out
+Error      = job.err
+Queue

@@ -70,6 +70,19 @@ A modular reimplementation of [AF-Cluster](https://github.com/HWaymentSteele/AF_
 
     ****
 
+## Installation/ Setup at CHTC at UW-Madison
+
+0. There's no need to build a Docker, we provide scripts here under `scripts/chtc` that use the already-existing ColabFold Docker.
+
+1. Git clone this repository to your home directory (i.e., `/home/waymentsteel/`)
+
+2. \[Just do this once\] Download AF2 weights to local `staging` directory by calling `condor_submit download_af2_weights.sub` to run `download_af2_weights.sh`. Change username from waymentsteel to your own name.
+
+3. Modify the condor submission script at `condor_submit_template.sub` to put in your username (look out for in paths too) and batch_name for your runs. This will launch jobs using the executable `run_afcluster_chtc.sh`. 
+
+4. To do batch submission on CHTC, this is currently handled by creating file called `input_seqs.txt` that contains the IDs of the proteins you want to run. Each protein should exist as a .fasta file in the same directory you are launching jobs from.
+
+
 ## Usage
 
 ### Basic Usage
@@ -84,6 +97,7 @@ python afcluster.py --input sequences.fasta
 
 - `--input`: Input FASTA file (required)
 - `--msa`: Pre-computed MSA file (optional)
+- `--config`: Config yaml file (see examples in `configs`)
 
 ### Configuration
 
@@ -95,6 +109,7 @@ gap_cutoff: 0.25
 random_seed: 42
 
 cluster_method: "dbscan"
+amber_relax: False
 
 dbscan:
   min_samples: 10
