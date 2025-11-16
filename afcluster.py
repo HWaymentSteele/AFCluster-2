@@ -46,6 +46,35 @@ def run_cluster(args, subfolder, input):
             f.write(f"Wrote {outpath} (n={len(out)})\n")
     os.remove(f"{subfolder}/{args.keyword}.log")
 
+def run_neighborcluster(args, subfolder, input):
+    '''Downsample original MSA and of those, take N closest sequences to be the clusters.
+    Each pred is for different variant'''
+
+    IDs, seqs = load_fasta(input)
+    L = len(seqs[0])
+    #filter by frac gaps
+    gap_filt_inds = [i for i,x in enumerate(seqs) if x.count('-') / L < float(args.gap_cutoff)]
+
+    filt_msa_file = f"{args.keyword}_filt_gaps.a3m"
+    write_fasta([IDs[i] for i in gap_filt_inds], [seqs[i] for i in gap_filt_inds], outfile=filt_msa_file)
+    filtered_IDs, filtered_seqs = downsample_msa(filt_msa_file)
+
+    counter=0
+    print(f'downsampled to {len(filtered_IDs)} variants')
+    cluster_dir = os.path.join(subfolder, "clusters",)
+    os.makedirs(cluster_dir, exist_ok=True)
+
+    for ind, seq in list(zip(filtered_IDs, filtered_seqs)):
+        closest_inds = get_closest_n_seqs(seq, filtered_seqs, n=args.num_neighbors)
+        outpath = os.path.join(cluster_dir, f"{args.keyword}_{counter:03d}.a3m")
+
+        inds_for_cluster = [filtered_IDs[x] for x in closest_inds]
+        seqs_for_cluster = [filtered_seqs[x] for x in closest_inds]
+        seqs_for_cluster = remove_gap_cols(seqs_for_cluster)
+
+        write_fasta(inds_for_cluster, seqs_for_cluster, outfile=outpath)
+        counter+=1
+
 def main(args):
     ids, seqs = load_fasta(args.input); print(ids)
     
@@ -53,8 +82,13 @@ def main(args):
         print(f'Assuming ID associated with input MSA is {id[0]}.')
         subfolder = os.path.join(args.outdir, ids[0])
         
-        print(f'Running clustering...')
-        run_cluster(args, subfolder, args.msa)
+        if args.cluster_method=='dbscan':
+            print(f'Running DBSCAN clustering...')
+            run_cluster(args, subfolder, args.msa)
+
+        elif args.cluster_method=='neighbor':
+            print(f'Running neighborcluster')
+            run_neighborcluster(args, subfolder, args.msa)
 
     for id_, seq_ in zip(ids, seqs): 
         args.keyword = id_
@@ -64,17 +98,22 @@ def main(args):
 
         print(f'Running generating MSA...')
         if not os.path.exists(msa_file): 
-            msa_seqs = run_mmseqs(seq_, args.tmpdir)
+            msa_seqs = run_mmseqs(seq_, args.tmpdir) # I think this is msa lines?
             with open(msa_file, "w") as a3m:
                 a3m.write(msa_seqs[0])
         
-        print(f'Running clustering...')
-        run_cluster(args, subfolder, msa_file)
+        if args.cluster_method=='dbscan':
+            print(f'Running DBSCAN clustering...')
+            run_cluster(args, subfolder, msa_file)
+        elif args.cluster_method=='neighbor':
+            print(f'Running neighborcluster')
+            run_neighborcluster(args, subfolder, msa_file)
+
 
         print(f'Running structure prediction...')
         pred_dir = os.path.join(subfolder, 'preds')
         os.makedirs(pred_dir, exist_ok=True)
-        for i in [0, 1, 2, 3]:
+        for i in range(args.num_seeds):
             for fil in glob.glob(f"{subfolder}/clusters/*.a3m"):
                 fil_name = fil.split('/')[-1].strip('.a3m')
                 os.makedirs(f'{pred_dir}/{fil_name}/s{i}', exist_ok=True)
@@ -89,19 +128,24 @@ def main(args):
                                     '--jobname-prefix', f'{fil_name}',
                                     f'{fil}', f'{pred_dir}/{fil_name}/s{i}']
                 if args.amber_relax:
-                    sp.command.extend(['--amber', '--use-gpu-relax'])                   
+                    sp_command.extend(['--amber', '--use-gpu-relax'])                   
 
                 subprocess.run(sp_command)
+
+        if args.zip_outputs:
+            shutil.make_archive(f'{args.keyword}', 'zip', os.curdir)
+
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
 
     p.add_argument("--input", type=str, required=True, help="Input fasta")
     p.add_argument('--msa', type=str, default=None)
+    p.add_argument('--config', type=str, default='configs/afcluster.yml', help='config file')
    
     args = p.parse_args()
     
-    with open('configs/afcluster.yml', "r") as f:
+    with open(args.config, "r") as f:
         cfg = yaml.safe_load(f)
     
     for k, v in cfg.items():

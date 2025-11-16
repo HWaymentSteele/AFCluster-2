@@ -1,10 +1,13 @@
 keyword: "MAIN"           
 gap_cutoff: 0.25
 random_seed: 42
-outdir: "/scratch/users/gelnesr/afcluster" # output directory
-tmpdir: "/scratch/users/gelnesr/tmp/msas" # temporary directory for msas
-
+outdir: "output" # output directory
+tmpdir: "tmp" # temporary directory for msas
+num_seeds: 4
+amber_relax: False
 cluster_method: "dbscan"
+
+zip_outputs: True
 
 dbscan:
   min_samples: 10
@@ -14,6 +17,6 @@ dbscan:
   eps_step: 0.5 
 
 path_vars:
-  PATH: "/scratch/users/gelnesr/tools/localcolabfold/colabfold-conda/bin:$PATH" # path to colabfold
-  XDG_CACHE_HOME: "/scratch/users/gelnesr/cache" # path to xdg cache  
-  MPLCONFIGDIR: "/scratch/users/gelnesr/cache" # path to matplotlib cache
+  PATH: "/usr/local/envs/colabfold/bin/:$PATH" # path to colabfold
+  XDG_CACHE_HOME: "./cache" # path to xdg cache  
+  MPLCONFIGDIR: "./cache" # path to matplotlib cache

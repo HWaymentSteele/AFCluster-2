@@ -1,0 +1,17 @@
+keyword: "MAIN"           
+gap_cutoff: 0.1
+random_seed: 42
+outdir: "output" # output directory
+tmpdir: "out" # temporary directory for msas
+
+cluster_method: "neighbor"
+
+num_seeds: 1
+amber_relax: False
+num_neighbors: 30
+zip_outputs: True
+
+path_vars:
+  PATH: "/usr/local/envs/colabfold/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+  XDG_CACHE_HOME: "./cache" # path to xdg cache  
+  MPLCONFIGDIR: "./cache" # path to matplotlib cache
