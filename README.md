@@ -111,10 +111,10 @@ Modify `configs/afcluster.yml` to adjust clustering parameters:
 
 ```yaml
 keyword: "MAIN"           
-gap_cutoff: 0.25
+gap_cutoff: 0.25 # or 0.1 for NeighborCluster protocol
 random_seed: 42
 
-cluster_method: "dbscan"
+cluster_method: "dbscan" # or "neighbor" for NeighborCluster
 amber_relax: False
 
 dbscan:
