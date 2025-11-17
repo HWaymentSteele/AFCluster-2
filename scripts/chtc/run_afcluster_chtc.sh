@@ -9,5 +9,10 @@ export MPLCONFIGDIR=./cache
 cp /staging/waymentsteel/af2_weights/* ./cache/colabfold/params/
 pip install scikit-learn
 
-python afcluster.py --input INPUT.fasta --config configs/afcluster_chtc.yaml
+NAME=$1
+SEQ=$2
 
+echo ">" $NAME > ${NAME}.fasta
+echo ${SEQ} >> ${NAME}.fasta
+
+python afcluster.py --input ${NAME}.fasta --config configs/afcluster.yml
