@@ -18,7 +18,12 @@ A modular reimplementation of [AF-Cluster](https://github.com/HWaymentSteele/AF_
 
 3. Modify the condor submission script at `condor_submit_template.sub` to put in your username (look out for in paths too) and batch_name for your runs. This will launch jobs using the executable `run_afcluster_chtc.sh`. 
 
-4. To do batch submission on CHTC, this is currently handled by creating file called `input_seqs.txt` that contains the IDs of the proteins you want to run. Each protein should exist as a .fasta file in the same directory you are launching jobs from.
+4. To do batch submission on CHTC, this is currently handled by creating file called `input_seqs.csv` that contains the IDs of the proteins you want to run in the first column, and the sequences in the second, with no header. for instance:
+
+```
+protein1,MKQVHHHSKLM
+protein2,MAAALSDFERG
+```
 
 ## Installation on other systems
 
