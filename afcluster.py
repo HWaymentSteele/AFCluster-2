@@ -55,7 +55,7 @@ def run_neighborcluster(args, subfolder, input):
     #filter by frac gaps
     gap_filt_inds = [i for i,x in enumerate(seqs) if x.count('-') / L < float(args.gap_cutoff)]
 
-    filt_msa_file = f"{args.keyword}_filt_gaps.a3m"
+    filt_msa_file = f"{subfolder}/filt_gaps.a3m"
     write_fasta([IDs[i] for i in gap_filt_inds], [seqs[i] for i in gap_filt_inds], outfile=filt_msa_file)
     filtered_IDs, filtered_seqs = downsample_msa(filt_msa_file)
 
@@ -70,7 +70,7 @@ def run_neighborcluster(args, subfolder, input):
 
         inds_for_cluster = [filtered_IDs[x] for x in closest_inds]
         seqs_for_cluster = [filtered_seqs[x] for x in closest_inds]
-        seqs_for_cluster = remove_gap_cols(seqs_for_cluster)
+        seqs_for_cluster = fix_neighborcluster_msas(seqs_for_cluster)
 
         write_fasta(inds_for_cluster, seqs_for_cluster, outfile=outpath)
         counter+=1
@@ -114,7 +114,8 @@ def main(args):
         pred_dir = os.path.join(subfolder, 'preds')
         os.makedirs(pred_dir, exist_ok=True)
         for i in range(args.num_seeds):
-            for fil in glob.glob(f"{subfolder}/clusters/*.a3m"):
+            for fil in sorted(glob.glob(f"{subfolder}/clusters/*.a3m")):
+                print(fil)
                 fil_name = fil.split('/')[-1].strip('.a3m')
                 os.makedirs(f'{pred_dir}/{fil_name}/s{i}', exist_ok=True)
                 print(fil_name)
@@ -133,7 +134,10 @@ def main(args):
                 subprocess.run(sp_command)
 
         if args.zip_outputs:
-            shutil.make_archive(f'{args.keyword}', 'zip', os.curdir)
+            shutil.copy(args.config, f'{subfolder}/config.yml')
+            shutil.copy('out2_rep_seq.fasta', f'{subfolder}/rep_seqs.fasta')
+            os.remove('out2_rep_seq.fasta')
+            shutil.make_archive(f'{args.keyword}', 'zip', args.outdir )
 
 
 if __name__ == "__main__":

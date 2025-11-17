@@ -1,4 +1,4 @@
-keyword: "MAIN"           
+keyword: "neighborcluster"           
 gap_cutoff: 0.1
 random_seed: 42
 outdir: "output" # output directory

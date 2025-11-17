@@ -1,4 +1,4 @@
-keyword: "MAIN"           
+keyword: "afcluster"           
 gap_cutoff: 0.25
 random_seed: 42
 outdir: "output" # output directory
@@ -17,6 +17,6 @@ dbscan:
   eps_step: 0.5 
 
 path_vars:
-  PATH: "/usr/local/envs/colabfold/bin/:$PATH" # path to colabfold
+  PATH: "/usr/local/envs/colabfold/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
   XDG_CACHE_HOME: "./cache" # path to xdg cache  
   MPLCONFIGDIR: "./cache" # path to matplotlib cache
