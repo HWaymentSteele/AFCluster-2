@@ -134,11 +134,12 @@ def main(args):
                 subprocess.run(sp_command)
 
         if args.zip_outputs:
+
+            protein_ID = subfolder.split('/')[-1]
             shutil.copy(args.config, f'{subfolder}/config.yml')
             shutil.copy('out2_rep_seq.fasta', f'{subfolder}/rep_seqs.fasta')
             os.remove('out2_rep_seq.fasta')
-            shutil.make_archive(f'{args.keyword}', 'zip', args.outdir )
-
+            shutil.make_archive(f'{protein_ID}_{args.keyword}', 'zip', args.outdir )
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
