@@ -14,16 +14,18 @@ A modular reimplementation of [AF-Cluster](https://github.com/HWaymentSteele/AF_
 
 1. Git clone this repository to your home directory (i.e., `/home/waymentsteel/`)
 
-2. \[Just do this once\] Download AF2 weights to local `staging` directory by calling `condor_submit download_af2_weights.sub` to run `download_af2_weights.sh`. Change username from waymentsteel to your own name.
+2. [Just do this once, and again if your staging dir gets wiped]: download AF2 weights to local `staging` directory by calling `condor_submit download_af2_weights.sub` to run `download_af2_weights.sh`. Change username from waymentsteel to your own name.
 
 3. Modify the condor submission script at `condor_submit_template.sub` to put in your username (look out for in paths too) and batch_name for your runs. This will launch jobs using the executable `run_afcluster_chtc.sh`. 
 
-4. To do batch submission on CHTC, this is currently handled by creating file called `input_seqs.csv` that contains the IDs of the proteins you want to run in the first column, and the sequences in the second, with no header. for instance:
+4. Create a file called `input_seqs.csv` that contains the IDs of the proteins you want to run in the first column, and the sequences in the second, with no header. for instance:
 
 ```
 protein1,MKQVHHHSKLM
 protein2,MAAALSDFERG
 ```
+
+To submit a job, run  `condor_submit_template.sub`. This reads in the sequences in `input_seqs.csv`. You need to have the `condor_submit_template.sub`, `run_afcluster_chtc.sh`, and `input_seqs.csv` in the same dir. Results will also get stored there.
 
 ## Installation on other systems
 
