@@ -91,7 +91,7 @@ def main(args):
             run_neighborcluster(args, subfolder, args.msa)
 
     for id_, seq_ in zip(ids, seqs): 
-        args.keyword = id_
+        args.keyword += f'_{id_}'
         subfolder = os.path.join(args.outdir, id_)
         os.makedirs(subfolder, exist_ok=True)
         msa_file = os.path.join(subfolder, f'{id_}.a3m')
@@ -137,9 +137,11 @@ def main(args):
 
             protein_ID = subfolder.split('/')[-1]
             shutil.copy(args.config, f'{subfolder}/config.yml')
-            shutil.copy('out2_rep_seq.fasta', f'{subfolder}/rep_seqs.fasta')
-            os.remove('out2_rep_seq.fasta')
-            shutil.make_archive(f'{protein_ID}_{args.keyword}', 'zip', args.outdir )
+
+            if os.path.exists('out2_rep_seq.fasta'): #from NeighborCluster
+                shutil.copy('out2_rep_seq.fasta', f'{subfolder}/rep_seqs.fasta')
+                os.remove('out2_rep_seq.fasta')
+            shutil.make_archive(f'{args.keyword}', 'zip', args.outdir )
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
