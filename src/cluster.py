@@ -11,7 +11,7 @@ def cluster_DBSCAN(args, df):
     if dbscan.eps_val is None:
         eps_test_vals = np.arange(dbscan.min_eps, dbscan.max_eps + dbscan.eps_step, dbscan.eps_step)
         for eps in eps_test_vals:
-            testset = encode_seqs(df.sample(frac=args.gap_cutoff).sequence.tolist(), max_len=L)
+            testset = encode_seqs(df.sample(frac=args.gap_cutoff, random_state=args.random_seed).sequence.tolist(), max_len=L)
             clustering = DBSCAN(eps=eps, min_samples=dbscan.min_samples).fit(testset)
             n_clust = len(set(clustering.labels_))
             n_not_clustered = len(clustering.labels_[np.where(clustering.labels_==-1)])
