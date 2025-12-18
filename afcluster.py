@@ -116,7 +116,7 @@ def main(args):
         for i in range(args.num_seeds):
             for fil in sorted(glob.glob(f"{subfolder}/clusters/*.a3m")):
                 print(fil)
-                fil_name = fil.split('/')[-1].strip('.a3m')
+                fil_name = os.path.splitext(os.path.basename(fil))[0]
                 os.makedirs(f'{pred_dir}/{fil_name}/s{i}', exist_ok=True)
                 print(fil_name)
                 if os.path.exists(f'{pred_dir}/{fil_name}/s{i}/{fil_name}_0.done.txt'):
