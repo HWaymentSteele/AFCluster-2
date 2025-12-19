@@ -1,9 +1,11 @@
 Universe   = container
-container_image = docker://ghcr.io/sokrypton/colabfold:1.5.5-cuda12.2.2
+container_image = oras://ghcr.io/hwaymentsteele/afcluster2:0.1
+
 Executable = run_afcluster_chtc.sh
 Arguments = $(NAME) $(SEQ)
+USERNAME = $ENV(USER)
 
-transfer_input_files = run_afcluster_chtc.sh, /home/waymentsteel/AFCluster-2/
+transfer_input_files = run_afcluster_chtc.sh, /home/$(USERNAME)/AFCluster-2/
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 
