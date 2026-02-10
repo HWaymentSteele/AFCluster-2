@@ -76,28 +76,26 @@ def run_neighborcluster(args, subfolder, input):
         counter+=1
 
 def main(args):
-    ids, seqs = load_fasta(args.input); print(ids)
+    if args.input is not None:
+        ids, seqs = load_fasta(args.input); print(ids)
     
-    if args.msa is not None and len(ids) > 0:
-        print(f'Assuming ID associated with input MSA is {id[0]}.')
-        subfolder = os.path.join(args.outdir, ids[0])
-        
-        if args.cluster_method=='dbscan':
-            print(f'Running DBSCAN clustering...')
-            run_cluster(args, subfolder, args.msa)
-
-        elif args.cluster_method=='neighbor':
-            print(f'Running neighborcluster')
-            run_neighborcluster(args, subfolder, args.msa)
+    elif args.msa is not None:
+        ids = [os.path.basename(args.msa).split('.')[0]]
+        seqs = [''] #dummy seq
 
     for id_, seq_ in zip(ids, seqs): 
         args.keyword += f'_{id_}'
         subfolder = os.path.join(args.outdir, id_)
         os.makedirs(subfolder, exist_ok=True)
-        msa_file = os.path.join(subfolder, f'{id_}.a3m')
 
-        print(f'Running generating MSA...')
+        if args.msa is not None:
+            msa_file = args.msa
+            print(f'Using provided MSA: {msa_file}')
+        else:
+            msa_file = os.path.join(subfolder, f'{id_}.a3m')
+
         if not os.path.exists(msa_file): 
+            print(f'MSA file not found, generating...')
             msa_seqs = run_mmseqs(seq_, args.tmpdir) # I think this is msa lines?
             with open(msa_file, "w") as a3m:
                 a3m.write(msa_seqs[0])
@@ -108,7 +106,6 @@ def main(args):
         elif args.cluster_method=='neighbor':
             print(f'Running neighborcluster')
             run_neighborcluster(args, subfolder, msa_file)
-
 
         print(f'Running structure prediction...')
         pred_dir = os.path.join(subfolder, 'preds')
@@ -146,11 +143,18 @@ def main(args):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
 
-    p.add_argument("--input", type=str, required=True, help="Input fasta")
-    p.add_argument('--msa', type=str, default=None)
+    p.add_argument("--input", type=str, help="Input fasta")
+    p.add_argument('--msa', type=str, default=None, help="Input MSA")
     p.add_argument('--config', type=str, default='configs/afcluster.yml', help='config file')
    
     args = p.parse_args()
+
+   #must provide either input or msa
+    if args.input is None and args.msa is None:
+        p.error("Either input or msa must be provided")
+
+    if args.input is not None and args.msa is not None:
+        p.error("Only one of input or msa can be provided")
     
     with open(args.config, "r") as f:
         cfg = yaml.safe_load(f)
